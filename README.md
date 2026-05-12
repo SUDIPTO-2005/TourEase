@@ -12,7 +12,7 @@
 
 ---
 
-## ⚡ Quick Navigation
+## ⚡ Quick Navigations
 | 🚀 [Quick Start](#-quick-start) | 🛠️ [Tech Stack](#-tech-stack) | 🤝 [Contributing](CONTRIBUTING.md) | 📖 [Installation Guide](docs/INSTALLATION.md) |
 | :--- | :--- | :--- | :--- |
 
