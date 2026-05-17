@@ -31,6 +31,7 @@ import NotFound from "./components/NotFound";
 import TripPlanner from './pages/TripPlanner';
 import Footer from "./components/Footer";
 import WatchDemoPage from './pages/DemoSection';
+import MoodPlanner from "./pages/MoodPlanner";
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = Boolean(localStorage.getItem("token"));
@@ -79,6 +80,7 @@ function AppRoutes() {
           <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/trip-planner" element={<TripPlanner />} />
+          <Route path="/mood-planner" element={<MoodPlanner />} />
         </Routes>
       </div>
       {showNavigation && <Footer />}

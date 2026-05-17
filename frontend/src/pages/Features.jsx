@@ -15,7 +15,8 @@ import {
   Landmark,
   Car,
   Calendar,
-  CloudSun
+  CloudSun,
+  Heart
 } from 'lucide-react';
 
 export default function Features() {
@@ -55,6 +56,20 @@ export default function Features() {
               "Entry fees included"
             ]}
           />
+          <Link to="/mood-planner" className="block transform transition-transform hover:-translate-y-1">
+            <FeatureCard
+              icon={<Heart className="w-10 h-10" />}
+              title="Mood-Based Planner"
+              description="Select your travel mood (Relax, Adventure, Cultural, Romantic) and get an instant 3-day personalized itinerary perfectly tailored to your vibe."
+              color="bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-300"
+              highlights={[
+                "Vibe-based curation",
+                "Instant 3-day plans",
+                "Beautiful UI",
+                "Fully personalized"
+              ]}
+            />
+          </Link>
 
           <FeatureCard
             icon={<Shield className="w-10 h-10" />}
