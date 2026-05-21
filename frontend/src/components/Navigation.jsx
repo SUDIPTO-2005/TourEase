@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Heart, Sun, Moon, Globe, MapPin } from "lucide-react";
 import { useFavorites } from "../hooks/useFavorites";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/useTheme";
 import LanguageSelector from "./LanguageSelector";
 
 export default function Navigation() {

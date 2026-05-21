@@ -18,12 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import CountUp from "../components/CountUp";
-<<<<<<< HEAD
-import ChatbotLauncher from "../components/chatbot/ChatbotLauncher";
 import ThreeBackground from "../components/ThreeBackground";
-=======
->>>>>>> origin/Main
-
 
 export default function Home() {
   return (
@@ -106,27 +101,7 @@ export default function Home() {
             <div className="relative w-full flex justify-center lg:justify-end">
               <div className="relative z-20 animate-float-slow max-w-[420px] lg:max-w-[480px] w-full">
                 <div className="rounded-[2.5rem] p-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 backdrop-blur-sm shadow-2xl overflow-hidden">
-<<<<<<< HEAD
                   <ImageCarousel />
-=======
-                  <div className="rounded-[2rem] overflow-hidden relative group">
-                    <img
-                      src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop"
-                      alt="Luxury Tourism"
-                      className="w-full h-[300px] md:h-[380px] lg:h-[480px] object-cover transition-transform duration-[3s] group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-
-                    <div className="absolute bottom-6 left-6 bg-white/70 dark:bg-white/10 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/40 dark:border-white/20 shadow-xl">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="text-teal-500 w-3 h-3" />
-                        <p className="text-gray-900 dark:text-white text-[10px] font-bold uppercase tracking-wider">
-                          Top Rated Experience
-                        </p>
-                      </div>
-                    </div>
-                  </div>
->>>>>>> origin/Main
                 </div>
               </div>
             </div>
@@ -459,7 +434,6 @@ function CommunityCard({ name, location, quote, trips }) {
   );
 }
 
-<<<<<<< HEAD
 const carouselImages = [
   "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop",
   "/images/tropical_beach_travel_1778697569059.png",
@@ -471,7 +445,6 @@ const carouselImages = [
 
 function ImageCarousel() {
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [isHovered, setIsHovered] = React.useState(false);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -483,8 +456,6 @@ function ImageCarousel() {
   return (
     <div 
       className="rounded-[2rem] overflow-hidden relative group w-full h-[300px] md:h-[380px] lg:h-[480px] transition-all duration-500 hover:shadow-2xl hover:shadow-teal-500/20"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {carouselImages.map((src, index) => (
         <img
@@ -514,7 +485,7 @@ function ImageCarousel() {
     </div>
   );
 }
-=======
+
 FeatureCard.propTypes = {
   icon: PropTypes.node.isRequired,
   title: PropTypes.string.isRequired,
@@ -536,4 +507,4 @@ CommunityCard.propTypes = {
   quote: PropTypes.string.isRequired,
   trips: PropTypes.string.isRequired,
 };
->>>>>>> origin/Main
+
