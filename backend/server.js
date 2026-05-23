@@ -7,14 +7,14 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const contactRoutes = require("./routes/contactRoutes");
-const tripRouter = require("./routes/tripRoutes");
-const itineraryRoutes = require("./routes/itineraryRoutes");
 const eventRoutes = require("./routes/eventRoutes");
-const weatherRoutes = require("./routes/weatherRoutes");
-const smartPlannerRoutes = require("./routes/smartPlannerRoutes");
+const itineraryRoutes = require("./routes/itineraryRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
-const expenseRoutes = require("./routes/expenseRoutes");
+const smartPlannerRoutes = require("./routes/smartPlannerRoutes");
+const tripRoutes = require("./routes/tripRoutes");
+const weatherRoutes = require("./routes/weatherRoutes");
 const chatRoutes = require("./routes/chatroutes");
+const expenseRoutes = require("./routes/expenseRoutes");
 
 // Connect to Database
 connectDB();
@@ -26,20 +26,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/trip', tripRouter);
-app.use('/api/itinerary', itineraryRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/weather', weatherRoutes);
-app.use('/api/smart-planner', smartPlannerRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/chat', chatRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/trip", tripRoutes);
+app.use("/api/itinerary", itineraryRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/weather", weatherRoutes);
+app.use("/api/smart-planner", smartPlannerRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/expenses", expenseRoutes);
 
 // Health check route
-app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'Server is running' });
+app.get("/api/health", (req, res) => {
+  res.json({ success: true, message: "Server is running" });
 });
 
 app.use((err, req, res, next) => {
