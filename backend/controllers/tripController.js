@@ -1,43 +1,51 @@
 const OpenAI = require("openai");
 const weatherService = require("../services/weatherService");
 
-const openaiApiKey = process.env.OPENROUTER_API_KEY;
+// Support both OpenRouter and direct OpenAI keys
+const openaiApiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
 const openai = openaiApiKey
   ? new OpenAI({
       apiKey: openaiApiKey,
-      baseURL: "https://openrouter.ai/api/v1",
+      baseURL: process.env.OPENROUTER_API_KEY
+        ? "https://openrouter.ai/api/v1"
+        : undefined,
     })
   : null;
 
-const formatDate = (date) => date.toISOString().split('T')[0];
+// ============================
+// HELPERS
+// ============================
+const formatDate = (date) => date.toISOString().split("T")[0];
 
 const createDateRange = (start, end) => {
-  const [startYear, startMonth, startDay] = start.split('-').map(Number);
-  const [endYear, endMonth, endDay] = end.split('-').map(Number);
+  const [startYear, startMonth, startDay] = start.split("-").map(Number);
+  const [endYear, endMonth, endDay] = end.split("-").map(Number);
   const startDate = new Date(Date.UTC(startYear, startMonth - 1, startDay));
   const endDate = new Date(Date.UTC(endYear, endMonth - 1, endDay));
   const dates = [];
-  for (let current = new Date(startDate); current <= endDate; current.setUTCDate(current.getUTCDate() + 1)) {
+  for (
+    let current = new Date(startDate);
+    current <= endDate;
+    current.setUTCDate(current.getUTCDate() + 1)
+  ) {
     dates.push(formatDate(new Date(current)));
   }
   return dates;
 };
 
 const destinationMustVisits = {
-  paris: ['Eiffel Tower', 'Louvre Museum', 'Notre-Dame Cathedral'],
-  tokyo: ['Senso-ji Temple', 'Shibuya Crossing', 'Meiji Shrine'],
-  rome: ['Colosseum', 'Vatican Museums', 'Trevi Fountain'],
-  london: ['Tower of London', 'British Museum', 'London Eye'],
-  newyork: ['Statue of Liberty', 'Central Park', 'Times Square'],
-  bali: ['Uluwatu Temple', 'Tegallalang Rice Terrace', 'Ubud Monkey Forest'],
-  dubai: ['Burj Khalifa', 'The Dubai Mall', 'Palm Jumeirah'],
+  paris: ["Eiffel Tower", "Louvre Museum", "Notre-Dame Cathedral"],
+  tokyo: ["Senso-ji Temple", "Shibuya Crossing", "Meiji Shrine"],
+  rome: ["Colosseum", "Vatican Museums", "Trevi Fountain"],
+  london: ["Tower of London", "British Museum", "London Eye"],
+  newyork: ["Statue of Liberty", "Central Park", "Times Square"],
+  bali: ["Uluwatu Temple", "Tegallalang Rice Terrace", "Ubud Monkey Forest"],
+  dubai: ["Burj Khalifa", "The Dubai Mall", "Palm Jumeirah"],
 };
 
 const getMustVisitList = (destination) => {
-  const key = destination.toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (destinationMustVisits[key]) {
-    return destinationMustVisits[key];
-  }
+  const key = destination.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (destinationMustVisits[key]) return destinationMustVisits[key];
   const normalized = destination.trim();
   return [
     `${normalized} historic center or old town`,
@@ -47,9 +55,11 @@ const getMustVisitList = (destination) => {
 };
 
 const parseWeatherContext = (weatherContext) => {
-  if (!weatherContext || typeof weatherContext !== 'string') return {};
-  return weatherContext.split('\n').reduce((map, line) => {
-    const match = line.match(/^Date:\s*(\d{4}-\d{2}-\d{2}),\s*Condition:\s*([^,]+),\s*Temp:\s*([^,]+),\s*Rain Probability:\s*(\d+\.?\d*)%/i);
+  if (!weatherContext || typeof weatherContext !== "string") return {};
+  return weatherContext.split("\n").reduce((map, line) => {
+    const match = line.match(
+      /^Date:\s*(\d{4}-\d{2}-\d{2}),\s*Condition:\s*([^,]+),\s*Temp:\s*([^,]+),\s*Rain Probability:\s*(\d+\.?\d*)%/i
+    );
     if (match) {
       map[match[1]] = {
         condition: match[2],
@@ -62,7 +72,7 @@ const parseWeatherContext = (weatherContext) => {
 };
 
 const validateItineraryPlan = (plan, expectedDates) => {
-  if (!plan || typeof plan !== 'string') return false;
+  if (!plan || typeof plan !== "string") return false;
   const dayMatches = plan.match(/\*\*Day\s+(\d+)/g) || [];
   if (dayMatches.length < expectedDates.length) return false;
   const hasMustVisit = /MUST-VISIT|must-visit|must visit/i.test(plan);
@@ -71,40 +81,60 @@ const validateItineraryPlan = (plan, expectedDates) => {
   return hasMustVisit && hasTravelDetails && hasDailyWeather;
 };
 
-const createMockItinerary = ({ destination, startDate, endDate, travelers, budget, interests, accommodation, weatherContext }) => {
-  const interestText = interests && interests.length > 0 ? interests.join(', ') : 'general tourism';
+const createMockItinerary = ({
+  destination,
+  startDate,
+  endDate,
+  travelers,
+  budget,
+  interests,
+  accommodation,
+  weatherContext,
+}) => {
+  const interestText =
+    interests && interests.length > 0 ? interests.join(", ") : "general tourism";
   const dates = createDateRange(startDate, endDate);
   const mustVisits = getMustVisitList(destination);
   const weatherMap = parseWeatherContext(weatherContext);
 
-  const dailySections = dates.map((date, index) => {
-    const day = index + 1;
-    const weather = weatherMap[date];
-    const umbrellaAdvice = weather && weather.rain && Number(weather.rain.replace('%', '')) >= 60
-      ? 'Carry an umbrella or rain jacket, and plan some indoor options.'
-      : 'Enjoy the day, but keep a light jacket handy in case of changing weather.';
+  const dailySections = dates
+    .map((date, index) => {
+      const day = index + 1;
+      const weather = weatherMap[date];
+      const umbrellaAdvice =
+        weather && weather.rain && Number(weather.rain.replace("%", "")) >= 60
+          ? "Carry an umbrella or rain jacket, and plan some indoor options."
+          : "Enjoy the day, but keep a light jacket handy in case of changing weather.";
 
-    const weatherLine = weather
-      ? `Weather: ${weather.condition}, ${weather.temp}, Rain chance ${weather.rain}. ${umbrellaAdvice}`
-      : 'Weather: Check local forecast for this day and pack accordingly.';
+      const weatherLine = weather
+        ? `Weather: ${weather.condition}, ${weather.temp}, Rain chance ${weather.rain}. ${umbrellaAdvice}`
+        : "Weather: Check local forecast for this day and pack accordingly.";
 
-    const travelLine = index === 0
-      ? `Travel Details: Arrive at ${destination} in the morning or early afternoon, check in to your ${accommodation || 'hotel'}, and settle in before exploring. Use local airport/train shuttle or a rideshare to reach your accommodation.`
-      : index === dates.length - 1
-      ? `Travel Details: Enjoy the final morning in ${destination} before departing in the afternoon or evening. Allow time for airport/train transfers and final packing.`
-      : `Travel Details: Use the day to explore with easy local transfers between activities. Consider using the ${destination.toLowerCase().includes('new york') ? 'subway' : destination.toLowerCase().includes('paris') ? 'metro' : 'local transit network'} or rideshare services for convenience.`;
+      const travelLine =
+        index === 0
+          ? `Travel Details: Arrive at ${destination} in the morning or early afternoon, check in to your ${accommodation || "hotel"}, and settle in before exploring. Use local airport/train shuttle or a rideshare to reach your accommodation.`
+          : index === dates.length - 1
+          ? `Travel Details: Enjoy the final morning in ${destination} before departing in the afternoon or evening. Allow time for airport/train transfers and final packing.`
+          : `Travel Details: Use the day to explore with easy local transfers between activities. Consider using the ${
+              destination.toLowerCase().includes("new york")
+                ? "subway"
+                : destination.toLowerCase().includes("paris")
+                ? "metro"
+                : "local transit network"
+            } or rideshare services for convenience.`;
 
-    return `**Day ${day} – ${date}**
+      return `**Day ${day} – ${date}**
 ${travelLine}
 ${weatherLine}
 Morning: Begin with a visit to ${mustVisits[0]} in ${destination} and enjoy the local atmosphere.
 Afternoon: Explore ${mustVisits[1]} or a neighborhood that matches your interests in ${interestText}.
 Evening: Dine at a recommended local spot and finish the day with a relaxing walk around ${mustVisits[2]}.
 `;
-  }).join('\n');
+    })
+    .join("\n");
 
   return `MUST-VISIT PLACES FOR ${destination}:
-- ${mustVisits.join('\n- ')}
+- ${mustVisits.join("\n- ")}
 
 ${dailySections}
 TRIP DETAILS:
@@ -120,7 +150,7 @@ TRAVEL DETAILS:
 - Departure: Last day departure with time set aside for transfers and final packing.
 
 WEATHER NOTES:
-${weatherContext || 'Weather information is unavailable. Check local forecasts before travel.'}`;
+${weatherContext || "Weather information is unavailable. Check local forecasts before travel."}`;
 };
 
 // ============================
@@ -137,23 +167,26 @@ const generateTrip = async (req, res) => {
     accommodation,
   } = req.body;
 
+  let weatherContext = "Weather data unavailable for these dates.";
+
   try {
     if (!destination || !startDate || !endDate) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     // --- Fetch Weather Context ---
-    let weatherContext = "Weather data unavailable for these dates.";
     try {
-      const forecast = await weatherService.getWeatherForecast(destination, { 
-        start: startDate, 
-        end: endDate 
+      const forecast = await weatherService.getWeatherForecast(destination, {
+        start: startDate,
+        end: endDate,
       });
-      
       if (forecast && forecast.length > 0) {
-        weatherContext = forecast.map(day => 
-          `Date: ${day.date}, Condition: ${day.condition}, Temp: ${day.temp.avg}°C, Rain Probability: ${day.precipitation}%`
-        ).join("\n");
+        weatherContext = forecast
+          .map(
+            (day) =>
+              `Date: ${day.date}, Condition: ${day.condition}, Temp: ${day.temp.avg}°C, Rain Probability: ${day.precipitation}%`
+          )
+          .join("\n");
       }
     } catch (weatherErr) {
       console.error("Weather service integration error:", weatherErr.message);
@@ -195,81 +228,57 @@ Return in clean readable text.
     let plan;
 
     if (!openai) {
+      console.log("No API key configured — using fallback itinerary.");
       plan = createMockItinerary({
-        destination,
-        startDate,
-        endDate,
-        travelers,
-        budget,
-        interests,
-        accommodation,
-        weatherContext,
+        destination, startDate, endDate, travelers,
+        budget, interests, accommodation, weatherContext,
       });
-    } else {
-      const response = await openai.chat.completions.create({
-        model: "meta-llama/llama-3.1-8b-instruct",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 1400,
-        temperature: 0.7,
+      return res.json({
+        plan,
+        warning: "Using local fallback itinerary because no API key is configured.",
       });
+    }
 
-      plan = response.choices[0].message.content;
+    const response = await openai.chat.completions.create({
+      model: "meta-llama/llama-3.1-8b-instruct",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1400,
+      temperature: 0.7,
+    });
 
-      const dates = createDateRange(startDate, endDate);
-      if (!validateItineraryPlan(plan, dates)) {
-        console.warn('AI itinerary response did not include full day coverage or must-visit list; using fallback itinerary.');
-        plan = createMockItinerary({
-          destination,
-          startDate,
-          endDate,
-          travelers,
-          budget,
-          interests,
-          accommodation,
-          weatherContext,
-        });
-      }
+    plan = response.choices[0].message.content;
+
+    // Validate AI response; fall back to mock if incomplete
+    const dates = createDateRange(startDate, endDate);
+    if (!validateItineraryPlan(plan, dates)) {
+      console.warn("AI itinerary incomplete — using fallback itinerary.");
+      plan = createMockItinerary({
+        destination, startDate, endDate, travelers,
+        budget, interests, accommodation, weatherContext,
+      });
     }
 
     res.json({ plan });
   } catch (error) {
-console.error("AI Error:", error);
-
-if (!openai) {
-  console.log("Returning fallback itinerary because API key is not configured...");
-
-  const plan = createMockItinerary({
-    destination: req.body.destination,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    travelers: req.body.travelers,
-    budget: req.body.budget,
-    interests: req.body.interests,
-    accommodation: req.body.accommodation,
-    weatherContext,
-  });
-
-  return res.json({
-    plan,
-    warning:
-      "Using local fallback itinerary because OpenAI API key is not configured.",
-  });
-}
-
-  res.status(500).json({
-    error: "Failed to generate trip",
-    details: error.message,
-  });
- }
+    console.error("AI Error:", error);
+    const plan = createMockItinerary({
+      destination, startDate, endDate, travelers,
+      budget, interests, accommodation, weatherContext,
+    });
+    res.json({
+      plan,
+      warning: "Using local fallback itinerary due to an unexpected error.",
+    });
+  }
 };
 
 // ============================
 // REFINE EXISTING ITINERARY
 // ============================
 const refineTrip = async (req, res) => {
-  try {
-    const { originalPlan, refinementPrompt } = req.body;
+  const { originalPlan, refinementPrompt } = req.body;
 
+  try {
     if (!originalPlan || !refinementPrompt) {
       return res.status(400).json({ error: "Missing refinement data" });
     }
@@ -294,41 +303,32 @@ Rules:
 Return the updated itinerary only.
 `;
 
-    let updatedPlan;
-
     if (!openai) {
-      updatedPlan = `${originalPlan}\n\nNOTE: This itinerary is unchanged because OpenAI API key is not configured. Please set OPENROUTER_API_KEY to refine plans.`;
-    } else {
-      const response = await openai.chat.completions.create({
-        model: "meta-llama/llama-3.1-8b-instruct",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 1200,
-        temperature: 0.6,
+      return res.json({
+        updatedPlan: `${originalPlan}\n\nNOTE: Itinerary unchanged — no API key is configured. Set OPENROUTER_API_KEY or OPENAI_API_KEY to enable refinements.`,
       });
+    }
 
-      updatedPlan = response.choices[0].message.content;
+    const response = await openai.chat.completions.create({
+      model: "meta-llama/llama-3.1-8b-instruct",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1200,
+      temperature: 0.6,
+    });
 
-      if (!updatedPlan || updatedPlan.trim().length === 0) {
-        throw new Error("AI returned empty refinement");
-      }
+    const updatedPlan = response.choices[0].message.content;
+
+    if (!updatedPlan || updatedPlan.trim().length === 0) {
+      throw new Error("AI returned empty refinement");
     }
 
     res.json({ updatedPlan });
   } catch (error) {
-console.error("Refinement AI Error:", error);
-
-if (!openai) {
-  return res.json({
-    updatedPlan: `${req.body.originalPlan}
-
-NOTE: OpenAI API key is not configured, so the itinerary was not changed.`,
-  });
-}
-
- res.status(500).json({
-   error: "Failed to refine itinerary",
-  });
- }
+    console.error("Refinement AI Error:", error);
+    res.json({
+      updatedPlan: `${originalPlan}\n\nNOTE: Refinement failed due to an error. Please try again.`,
+    });
+  }
 };
 
 module.exports = {
