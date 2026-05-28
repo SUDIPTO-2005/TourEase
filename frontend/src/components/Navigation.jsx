@@ -6,7 +6,7 @@ import { useTheme } from "../context/useTheme";
 import LanguageSelector from "./LanguageSelector";
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);a
   const { theme, toggleTheme } = useTheme();
 
   const location = useLocation();
@@ -24,6 +24,7 @@ export default function Navigation() {
     { path: "/smart-trip-planner", label: "Smart Planner" },
     { path: "/split-expense", label: "Expense Splitter" },
     { path: "/travel-locker", label: "Travel Locker" },
+    { path: "/currency-converter", label: "Currency" },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -134,6 +135,7 @@ export default function Navigation() {
                   "hover:bg-amber-100 dark:hover:bg-amber-900/30",
                   "hover:bg-lime-100 dark:hover:bg-lime-900/30"
                 ];
+                const isSecondaryDesktopItem = index >= 5;
                 return (
                   <Link
                     key={item.path}
@@ -182,6 +184,12 @@ export default function Navigation() {
                   <Sun className="w-5 h-5 text-yellow-400 transition-transform duration-500 rotate-0" />
                 )}
               </button>
+
+              <LanguageSelector
+                variant="inline"
+                className="hidden min-[1200px]:block"
+              />
+
 
               {/* CTA - Uses clamp to shrink padding and text proportionally */}
               {!isLoggedIn ? (
@@ -275,13 +283,17 @@ export default function Navigation() {
                   style={{
                     animation: isOpen
                       ? `slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${0.05 * (index + 1)}s backwards`
-                      : "none"
+                      : "none",
                   }}
                 >
                   {item.label}
                 </Link>
               );
             })}
+
+            <div className="pt-2 xl:hidden">
+              <LanguageSelector variant="inline" className="w-full" />
+            </div>
 
             {/* Favorites */}
             <Link
@@ -292,9 +304,10 @@ export default function Navigation() {
                 : "text-gray-700 dark:text-gray-100 hover:bg-red-100 dark:hover:bg-red-900/40"
                 }`}
               style={{
+              
                 animation: isOpen
                   ? `slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s backwards`
-                  : "none"
+                  : "none",
               }}
             >
               <Heart className="w-5 h-5 shrink-0 transition-colors group-hover:text-red-500 group-hover:fill-red-500" />
@@ -313,7 +326,7 @@ export default function Navigation() {
             style={{
               animation: isOpen
                 ? `slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.35s backwards`
-                : "none"
+                : "none",
             }}
           >
             {!isLoggedIn ? (
