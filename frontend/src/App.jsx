@@ -39,6 +39,7 @@ import TripPlanner from './pages/TripPlanner';
 import SmartTripPlanner from './pages/SmartTripPlanner';
 import Footer from "./components/Footer";
 import WatchDemoPage from './pages/DemoSection';
+import MoodPlanner from "./pages/MoodPlanner";
 import ScrollToTopOnNavigate from "./components/common/ScrollToTopOnNavigate";
 import DynamicPlannerPage from './pages/DynamicPlannerPage';
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -68,7 +69,7 @@ function AppRoutes() {
 
   return (
     <>
-      <ScrollToTopOnNavigate />
+      <ScrollToTopOnNavigate /> 
       {showNavigation && <Navigation />}
       <ScrollToTopButton />
       <LanguageSelector />
