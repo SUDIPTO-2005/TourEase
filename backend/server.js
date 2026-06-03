@@ -35,6 +35,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
+// 1. Connect to Database
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 const MONGODB_URI = process.env.MONGODB_URL;
 
 if (!MONGODB_URI) {
