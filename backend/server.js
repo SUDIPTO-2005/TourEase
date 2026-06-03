@@ -7,9 +7,9 @@ const morgan = require("morgan");
 const passport = require("./config/passport");
 
 dotenv.config();
+
 // Route Imports
 const connectDB = require("./config/db");
-const reviewRoutes = require("./routes/reviewRoutes");
 const authRoutes = require("./routes/authRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const tripRoutes = require("./routes/tripRoutes");
@@ -21,9 +21,6 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const chatRoutes = require("./routes/chatroutes");
 const expenseRoutes = require("./routes/expenseRoutes");
 const lockerRoutes = require("./routes/lockerRoutes");
-const helmet = require("helmet");
-const passport = require("./config/passport");
-const morgan = require("morgan");
 
 const app = express();
 
