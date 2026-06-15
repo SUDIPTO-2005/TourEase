@@ -66,5 +66,4 @@ A separação entre frontend e backend oferece:
 - reutilização de componentes
 - melhor organização do código
 - facilidade para testes e evolução do sistema
-
 A utilização de componentes React também melhora reutilização e modularidade da interface.
