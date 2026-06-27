@@ -95,6 +95,8 @@ function AppRoutes() {
           <Route path="/help" element={<HelpCenter />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/contributors" element={<Contributors />} />
           <Route path="/split-expense" element={<SplitExpense />} />
           <Route path="/travel-locker" element={<TravelLocker />} />
           <Route path="/currency-converter" element={<CurrencyConverter />} />
